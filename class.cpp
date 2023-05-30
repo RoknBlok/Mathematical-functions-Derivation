@@ -57,3 +57,71 @@ Maillon::~Maillon() {
 void Maillon::afficher() {
     cout << data << endl;
 }
+
+arbre::arbre() {
+    racine = NULL;
+}
+
+arbre::arbre(char type, char ope, float val) {
+    racine = new noeud;
+    racine->type = type;
+    racine->ope = ope;
+    racine->val = val;
+    racine->fg = NULL;
+    racine->fd = NULL;
+}
+
+arbre::arbre(char type, char ope, float val, arbre fg, arbre fd) {
+    racine = new noeud;
+    racine->type = type;
+    racine->ope = ope;
+    racine->val = val;
+    racine->fg = fg.racine;
+    racine->fd = fd.racine;
+}
+
+arbre::~arbre() {
+    delete racine;
+}
+
+void arbre::afficher() {
+    if (racine == NULL) {
+        cout << "L'arbre est vide" << endl;
+        return;
+    }
+    if (racine->type == 'f') {
+        cout << racine->val << endl;
+    } else {
+        cout << racine->ope << endl;
+        arbre fg;
+        fg.racine = racine->fg;
+        fg.afficher();
+        arbre fd;
+        fd.racine = racine->fd;
+        fd.afficher();
+    }
+}
+
+float arbre::evaluer() {
+    if (racine == NULL) {
+        cout << "L'arbre est vide" << endl;
+        return -1;
+    }
+    if (racine->type == 'f') {
+        return racine->val;
+    } else {
+        arbre fg;
+        fg.racine = racine->fg;
+        float val1 = fg.evaluer();
+        arbre fd;
+        fd.racine = racine->fd;
+        float val2 = fd.evaluer();
+        switch (racine->ope) {
+            case '+': return val1 + val2;
+            case '-': return val1 - val2;
+            case '*': return val1 * val2;
+            case '/': return val1 / val2;
+        }
+    }
+    return -1;
+}

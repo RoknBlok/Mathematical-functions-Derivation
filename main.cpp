@@ -64,11 +64,12 @@ int evaluer(string expression) {
     return pile.sommet();
 }
 
-// Test
-int main()
-{
-    string expression = "1+2*3";
-    cout << infixeVersSuffixe(expression) << endl;
-    cout << evaluer(infixeVersSuffixe(expression)) << endl;
+int main() {
+    string expression;
+    cout << "Entrez une expression arithmetique : ";
+    cin >> expression;
+    string expressionSuffixe = infixeVersSuffixe(expression);
+    cout << "Expression en notation polonaise inverse : " << expressionSuffixe << endl;
+    cout << "Valeur de l'expression : " << evaluer(expressionSuffixe) << endl;
     return 0;
 }
