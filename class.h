@@ -27,21 +27,26 @@ public:
 class noeud
 {
     public :
-    char type; //‘o’ pour opérateur et ‘f’ pour valeur.
+    char type; //‘o’ pour opérateur, ‘f’ pour valeur et ‘v’ pour variable
     char ope;
     float val;
+    char var;
     noeud * fg, * fd;
+    noeud(char type, char ope, float val, char var);
+    noeud(char type, char ope, float val, char var, noeud * fg, noeud * fd);
+    ~noeud();
 };
 
-//class arbre binaire
 class arbre
 {
     noeud * racine ;
 public:
-    arbre() ;
-    arbre(char type, char ope, float val) ;
-    arbre(char type, char ope, float val, arbre fg, arbre fd) ;
-    ~arbre() ;
-    void afficher() ;
-    float evaluer() ;
+    arbre();
+    arbre(std::string expression);
+    arbre(noeud * racine);
+    arbre derivee(char var);
+    ~arbre();
+    void afficher();
+    float evaluer();
+    void afficherPrefixe();
 };

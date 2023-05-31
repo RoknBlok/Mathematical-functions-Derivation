@@ -1,6 +1,6 @@
 #include <iostream>
-#include "class.h"
 #include <string>
+#include "class.h"
 
 using namespace std;
 
@@ -64,12 +64,61 @@ int evaluer(string expression) {
     return pile.sommet();
 }
 
-int main() {
+void exercice1() {
     string expression;
-    cout << "Entrez une expression arithmetique : ";
+    cout << "Entrez une expression suffixée : ";
     cin >> expression;
-    string expressionSuffixe = infixeVersSuffixe(expression);
-    cout << "Expression en notation polonaise inverse : " << expressionSuffixe << endl;
-    cout << "Valeur de l'expression : " << evaluer(expressionSuffixe) << endl;
+    cout << "Résultat : " << evaluer(expression) << endl;
+}
+
+void exercice2() {
+    string expression;
+    cout << "Entrez une expression arithmétique : ";
+    cin >> expression;
+    cout << "Expression en notation suffixée : " << infixeVersSuffixe(expression) << endl;
+    cout << "Résultat : " << evaluer(infixeVersSuffixe(expression)) << endl;
+}
+
+//arbre binaire qui dérive
+void exercice4()
+{
+    // X + 3 création de de l'arbre A1 qui a pour racine + de type operateur et pour fils gauche X et pour fils droit 3
+    arbre A1("X+3");
+    //dérivee de A1 par rapport à X
+    arbre A2 = A1.derivee('X');
+    //affichage de l'arbre A2
+    A2.afficher();
+
+
+}
+
+int main() {
+    cout<<"séléctionnez un programme :"<<endl;
+    cout<<"[1] : exercice 1"<<endl;
+    cout<<"[2] : exercice 2"<<endl;
+    cout<<"[3] : exercice 4"<<endl;
+    int prog;
+    cin>>prog;
+    switch (prog)
+    {
+    case 1:
+        cout<<"exercice 1 "<<endl;
+        exercice1();
+        break;
+    case 2:
+        cout<<"exercice 2"<<endl;
+        exercice2();
+        break;
+    case 3:
+        cout<<"exercice 3"<<endl;
+        exercice4();
+        break;
+    default:
+        cout<<"aucun programme séléctionné, fin."<<endl;
+            return 0;
+        break;
+    }
+
+
     return 0;
 }
