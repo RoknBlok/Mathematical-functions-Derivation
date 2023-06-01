@@ -16,18 +16,18 @@ int priorite(char op) {
 
 string infixeVersSuffixe(string expression) {
     Pile pile;
-    string sortie = "";
+    string sortie;
     for (int i = 0; i < expression.length(); i++) {
-        if (isdigit(expression[i])) {
-            sortie += expression[i];
-        } else if (expression[i] == '(') {
+        if (expression[i] == '(') {
             pile.empiler(expression[i]);
         } else if (expression[i] == ')') {
-            while (!pile.vide() && pile.sommet() != '(') {
+            while (pile.sommet() != '(') {
                 sortie += pile.sommet();
                 pile.depiler();
             }
             pile.depiler();
+        } else if (isdigit(expression[i])) {
+            sortie += expression[i];
         } else {
             while (!pile.vide() && priorite(pile.sommet()) >= priorite(expression[i])) {
                 sortie += pile.sommet();
@@ -82,35 +82,55 @@ void exercice2() {
 //arbre binaire qui dérive
 void exercice4()
 {
-    // X + 3 création de de l'arbre A1 qui a pour racine + de type operateur et pour fils gauche X et pour fils droit 3
-    arbre A1("X+3");
-    //dérivee de A1 par rapport à X
-    arbre A2 = A1.derivee('X');
-    //affichage de l'arbre A2
-    A2.afficher();
+    //test dérivation de l'expression 2*x+3
+    noeud * n1 = new noeud('f', ' ', 2, ' ');
+    noeud * n2 = new noeud('v', ' ', 0, 'x');
+    noeud * n3 = new noeud('o', '*', 0, ' ', n1, n2);
+    noeud * n4 = new noeud('f', ' ', 3, ' ');
+    noeud * n5 = new noeud('o', '+', 0, ' ', n3, n4);
+    arbre a(n5);
+    
+
+    //test dérivation de l'expression 2x+3
+    //arbre a("3+2*x");
 
 
+    
+
+
+    cout<<"Expression : ";
+    a.afficher();
+    cout<<endl;
+    a.evaluer();
+    cout<<"Expression évaluée : ";
+    a.afficher();
+
+    /*
+    cout<<"Expression dérivée par rapport à x : ";
+    a.deriver('x').afficher();
+    cout<<endl;*/
+    
 }
 
 int main() {
     cout<<"séléctionnez un programme :"<<endl;
-    cout<<"[1] : exercice 1"<<endl;
-    cout<<"[2] : exercice 2"<<endl;
-    cout<<"[3] : exercice 4"<<endl;
+    cout<<"[1] : prog 1"<<endl;
+    cout<<"[2] : prog 2"<<endl;
+    cout<<"[3] : prog 3"<<endl;
     int prog;
     cin>>prog;
     switch (prog)
     {
     case 1:
-        cout<<"exercice 1 "<<endl;
+        cout<<"prog 1 "<<endl;
         exercice1();
         break;
     case 2:
-        cout<<"exercice 2"<<endl;
+        cout<<"prog 2"<<endl;
         exercice2();
         break;
     case 3:
-        cout<<"exercice 3"<<endl;
+        cout<<"prog 3"<<endl;
         exercice4();
         break;
     default:

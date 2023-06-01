@@ -9,9 +9,7 @@ Pile::Pile() {
 }
 
 void Pile::empiler(char n) {
-    Maillon* temp = new Maillon;
-    temp->data = n;
-    temp->next = tete;
+    Maillon* temp = new Maillon(n, tete);
     tete = temp;
 }
 
@@ -22,11 +20,12 @@ void Pile::depiler() {
     }
     Maillon* temp = tete;
     tete = tete->next;
+    temp->next = NULL;
     delete temp;
 }
 
 bool Pile::vide() {
-    return (tete == NULL);
+    return tete == NULL;
 }
 
 int Pile::sommet() {
@@ -35,6 +34,30 @@ int Pile::sommet() {
         return -1;
     }
     return tete->data;
+}
+
+void Pile::empiler(noeud* n) {
+    Maillon* temp = new Maillon(n, tete);
+    tete = temp;
+}
+
+void Pile::depiler(noeud* n) {
+    if (tete == NULL) {
+        cout << "La pile est vide" << endl;
+        return;
+    }
+    Maillon* temp = tete;
+    tete = tete->next;
+    temp->next = NULL;
+    delete temp;
+}
+
+noeud* Pile::sommetNoeud() {
+    if (tete == NULL) {
+        cout << "La pile est vide" << endl;
+        return NULL;
+    }
+    return tete->n;
 }
 
 Maillon::Maillon() {
@@ -51,6 +74,11 @@ Maillon::Maillon(char n, Maillon* suivant) {
     next = suivant;
 }
 
+Maillon::Maillon(noeud* n, Maillon* suivant) {
+    this->n = n;
+    next = suivant;
+}
+
 Maillon::~Maillon() {
     delete next;
 }
@@ -63,77 +91,56 @@ arbre::arbre() {
     racine = NULL;
 }
 
-arbre::arbre(string expression)
-{
+//constructeur qui prend une expression en notation infixe et construit l'arbre correspondant
+
+
+arbre::arbre(noeud* racine) {
+    this->racine = racine;
+}
+
+arbre::arbre(string expression) {
     Pile pile;
     for (int i = 0; i < expression.length(); i++) {
+        if (expression[i] == ' ') {
+            continue;
+        }
         if (expression[i] == '(') {
             pile.empiler(expression[i]);
         } else if (expression[i] == ')') {
             while (pile.sommet() != '(') {
-                noeud* temp = new noeud('o', pile.sommet(), 0, ' ');
+                char ope = pile.sommet();
                 pile.depiler();
-                temp->fd = racine;
-                racine = temp;
+                noeud* fd = pile.sommetNoeud();
+                pile.depiler(fd);
+                noeud* fg = pile.sommetNoeud();
+                pile.depiler(fg);
+                noeud* temp = new noeud('o', ope, 0, ' ', fg, fd);
+                pile.empiler(temp);
             }
             pile.depiler();
         } else if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') {
             pile.empiler(expression[i]);
         } else if (expression[i] >= '0' && expression[i] <= '9') {
-            noeud* temp = new noeud('f', ' ', expression[i] - '0', ' ');
-            temp->fd = racine;
-            racine = temp;
-        } else if (expression[i] >= 'a' && expression[i] <= 'z') {
+            float val = 0;
+            while (expression[i] >= '0' && expression[i] <= '9') {
+                val = val * 10 + expression[i] - '0';
+                i++;
+            }
+            i--;
+            noeud* temp = new noeud('f', ' ', val, ' ');
+            pile.empiler(temp);
+        } else {
             noeud* temp = new noeud('v', ' ', 0, expression[i]);
-            temp->fd = racine;
-            racine = temp;
+            pile.empiler(temp);
         }
     }
-}
-
-arbre::arbre(noeud* racine) {
-    this->racine = racine;
+    racine = pile.sommetNoeud();
 }
 
 arbre::~arbre() {
     delete racine;
 }
 
-void arbre::afficher() {
-    if (racine == NULL) {
-        cout << "L'arbre est vide" << endl;
-        return;
-    }
-    if (racine->type == 'f') {
-        cout << racine->val << endl;
-    } else {
-        cout << racine->ope << endl;
-        arbre fg;
-        fg.racine = racine->fg;
-        fg.afficher();
-        arbre fd;
-        fd.racine = racine->fd;
-        fd.afficher();
-    }
-}
-
-void arbre::afficherPrefixe() {
-    if (racine == NULL) {
-        cout << "L'arbre est vide" << endl;
-        return;
-    }
-    if (racine->type == 'f') {
-        cout << racine->val << endl;
-    } else {
-        cout << racine->ope << endl;
-        arbre fg;
-        fg.racine = racine->fg;
-        fg.afficherPrefixe();
-        arbre fd;
-        fd.racine = racine->fd;
-        fd.afficherPrefixe();
-    }
-}
 
 float arbre::evaluer() {
     if (racine == NULL) {
@@ -159,24 +166,6 @@ float arbre::evaluer() {
     return -1;
 }
 
-arbre arbre::derivee(char var) {
-    if (racine == NULL) {
-        cout << "L'arbre est vide" << endl;
-        return arbre();
-    }
-    if (racine->type == 'f') {
-        return arbre();
-    } else {
-        switch (racine->ope) {
-            case '+': return arbre(new noeud('o', '+', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var)));
-            case '-': return arbre(new noeud('o', '-', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var)));
-            case '*': return arbre(new noeud('o', '+', 0, ' ', new noeud('o', '*', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var)), new noeud('o', '*', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var))));
-            case '/': return arbre(new noeud('o', '/', 0, ' ', new noeud('o', '-', 0, ' ', new noeud('o', '*', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var)), new noeud('o', '*', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var))), new noeud('o', '*', 0, ' ', new noeud('v', ' ', 0, var), new noeud('v', ' ', 0, var))));
-        }
-    }
-    return arbre();
-}
-
 noeud::noeud(char type, char ope, float val, char var) {
     this->type = type;
     this->ope = ope;
@@ -199,6 +188,71 @@ noeud::~noeud() {
     delete fg;
     delete fd;
 }
+
+void noeud::afficher() {
+    if (type == 'f') {
+        cout << val << " ";
+    } else if (type == 'v') {
+        cout << var << " ";
+    } else {
+        cout << ope << " ";
+    }
+}
+
+void arbre::afficherRec(noeud* n) {
+    if (n == NULL) {
+        return;
+    }
+    n->afficher();
+    afficherRec(n->fg);
+    afficherRec(n->fd);
+}
+
+void arbre::afficher() {
+    afficherRec(racine);
+    cout << endl;
+}
+
+//affichage arbre en notation préfixe
+void arbre::afficherPrefixe() {
+    if (racine == NULL) {
+        cout << "L'arbre est vide" << endl;
+        return;
+    }
+    racine->afficher();
+    arbre fg;
+    fg.racine = racine->fg;
+    fg.afficherPrefixe();
+    arbre fd;
+    fd.racine = racine->fd;
+    fd.afficherPrefixe();
+}
+
+
+
+noeud * noeud::deriver(char var) {
+    if (type == 'f') {
+        return new noeud('f', ' ', 0, ' ');
+    } else if (type == 'v') {
+        if (var == this->var) {
+            return new noeud('f', ' ', 1, ' ');
+        } else {
+            return new noeud('f', ' ', 0, ' ');
+        }
+    } else {
+        noeud* temp = new noeud('o', ope, 0, ' ');
+        temp->fg = fg->deriver(var);
+        temp->fd = fd->deriver(var);
+        return temp;
+    }
+}
+
+arbre arbre::deriver(char var) {
+    arbre temp;
+    temp.racine = racine->deriver(var);
+    return temp;
+}
+
 
 /*
 float arbre::evaluer() {
