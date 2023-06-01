@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "class.h"
 
 using namespace std;
@@ -41,15 +42,60 @@ void Pile::empiler(noeud* n) {
     tete = temp;
 }
 
-void Pile::depiler(noeud* n) {
+int Pile::priorite(char op) {
+    if (op == '+' || op == '-') {
+        return 1;
+    }
+    if (op == '*' || op == '/') {
+        return 2;
+    }
+    return 0;
+}
+
+void Pile::infixeVersSuffixe(string expression) {
+    string sortie;
+    for (int i = 0; i < expression.length(); i++) {
+        if (expression[i] == '(') {
+            empiler(expression[i]);
+        } else if (expression[i] == ')') {
+            while (sommet() != '(') {
+                sortie += sommet();
+                depiler();
+            }
+            depiler();
+        } else if (isdigit(expression[i])) {
+            sortie += expression[i];
+        } else {
+            while (!vide() && priorite(sommet()) >= priorite(expression[i])) {
+                sortie += sommet();
+                depiler();
+            }
+            empiler(expression[i]);
+        }
+    }
+    while (!vide()) {
+        sortie += sommet();
+        depiler();
+    }
+    cout << sortie << endl;
+}
+
+noeud::noeud() {
+    fg = NULL;
+    fd = NULL;
+}
+
+noeud * Pile::depiler_noeud() {
     if (tete == NULL) {
         cout << "La pile est vide" << endl;
-        return;
+        return NULL;
     }
     Maillon* temp = tete;
     tete = tete->next;
     temp->next = NULL;
+    noeud* n = temp->n;
     delete temp;
+    return n;
 }
 
 noeud* Pile::sommetNoeud() {
@@ -98,43 +144,49 @@ arbre::arbre(noeud* racine) {
     this->racine = racine;
 }
 
-arbre::arbre(string expression) {
-    Pile pile;
-    for (int i = 0; i < expression.length(); i++) {
-        if (expression[i] == ' ') {
+
+
+
+
+
+//tutur
+arbre::arbre(string a){
+    Pile pile1;
+    Pile pile2;
+    pile1.infixeVersSuffixe(a);
+    cout << a << endl;
+    noeud *current = racine;
+
+    for(int i=0;i<a.size();i++){
+        if(a[i]==' '){
             continue;
         }
-        if (expression[i] == '(') {
-            pile.empiler(expression[i]);
-        } else if (expression[i] == ')') {
-            while (pile.sommet() != '(') {
-                char ope = pile.sommet();
-                pile.depiler();
-                noeud* fd = pile.sommetNoeud();
-                pile.depiler(fd);
-                noeud* fg = pile.sommetNoeud();
-                pile.depiler(fg);
-                noeud* temp = new noeud('o', ope, 0, ' ', fg, fd);
-                pile.empiler(temp);
-            }
-            pile.depiler();
-        } else if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') {
-            pile.empiler(expression[i]);
-        } else if (expression[i] >= '0' && expression[i] <= '9') {
-            float val = 0;
-            while (expression[i] >= '0' && expression[i] <= '9') {
-                val = val * 10 + expression[i] - '0';
+        if(a[i]>='0' && a[i]<='9'){
+            int valeur = 0;
+            while(a[i]>='0' && a[i]<='9'){
+                valeur = valeur*10 + (a[i]-'0');
                 i++;
             }
-            i--;
-            noeud* temp = new noeud('f', ' ', val, ' ');
-            pile.empiler(temp);
-        } else {
-            noeud* temp = new noeud('v', ' ', 0, expression[i]);
-            pile.empiler(temp);
+            noeud *n = new noeud;
+            n->type = 'f';
+            n->val = valeur;
+            pile2.empiler(n);
+        }
+        else if(a[i]=='+' || a[i]=='-' || a[i]=='*' || a[i]=='/' || a[i]=='^'){
+            noeud *n = new noeud;
+            n->type = 'o';
+            n->ope = a[i];
+            n->fg = pile2.depiler_noeud();
+            n->fd = pile2.depiler_noeud();
+            pile2.empiler(n);
+        }else if(a[i]=='X' || a[i]=='Y' || a[i]=='Z'){
+            noeud *n = new noeud;
+            n->type = 'v';
+            n->ope = a[i];
+            pile2.empiler(n);
         }
     }
-    racine = pile.sommetNoeud();
+    (*this).racine = pile2.depiler_noeud();
 }
 
 arbre::~arbre() {
@@ -142,28 +194,30 @@ arbre::~arbre() {
 }
 
 
-float arbre::evaluer() {
-    if (racine == NULL) {
-        cout << "L'arbre est vide" << endl;
-        return -1;
+float arbre::evaluer(noeud *n) {
+    if (n->type == 'f') {
+        return n->val;
+    }else if(n->type == 'v'){
+        return n->ope;
     }
-    if (racine->type == 'f') {
-        return racine->val;
-    } else {
-        arbre fg;
-        fg.racine = racine->fg;
-        float val1 = fg.evaluer();
-        arbre fd;
-        fd.racine = racine->fd;
-        float val2 = fd.evaluer();
-        switch (racine->ope) {
-            case '+': return val1 + val2;
-            case '-': return val1 - val2;
-            case '*': return val1 * val2;
-            case '/': return val1 / val2;
-        }
+
+    int gauche = evaluer(n->fg);
+    int droite = evaluer(n->fd);
+
+    switch (n->ope) {
+        case '+':
+            return gauche + droite;
+        case '-':
+            return gauche - droite;
+        case '*':
+            return gauche * droite;
+        case '/':
+            return gauche / droite;
+        case '^':
+            return pow(gauche, droite);
+        default:
+            return 0;
     }
-    return -1;
 }
 
 noeud::noeud(char type, char ope, float val, char var) {
@@ -199,18 +253,26 @@ void noeud::afficher() {
     }
 }
 
-void arbre::afficherRec(noeud* n) {
-    if (n == NULL) {
+void arbre::afficher(noeud *n) { // /!\ NE PAS OUBLIER DE METTRE DES ESPACES ENTRE CHAQUES VALEURS ET OPERATEURS !!!
+    if (n == nullptr) {
         return;
     }
-    n->afficher();
-    afficherRec(n->fg);
-    afficherRec(n->fd);
+
+    if (n->type == 'o') {
+        cout << "( ";
+        afficher(n->fg);
+        cout << n->ope << " ";
+        afficher(n->fd);
+        cout << ") ";
+    } else if(n->type == 'f'){
+        cout << n->val << " ";
+    }else if(n->type == 'v'){
+        cout << n->ope << " ";
+    }
 }
 
 void arbre::afficher() {
-    afficherRec(racine);
-    cout << endl;
+    afficher((*this).racine);
 }
 
 //affichage arbre en notation préfixe

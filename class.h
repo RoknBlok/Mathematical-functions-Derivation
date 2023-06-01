@@ -7,6 +7,7 @@ class noeud
     float val;
     char var;
     noeud * fg, * fd;
+    noeud();
     noeud(char type, char ope, float val, char var);
     noeud(char type, char ope, float val, char var, noeud * fg, noeud * fd);
     ~noeud();
@@ -37,10 +38,14 @@ public:
     bool vide();
     int sommet();
 
+
+    void infixeVersSuffixe(std::string expression);
+    //priorité
+    int priorite(char op);
     //empiler noeud
     void empiler(noeud * n);
     //depiler noeud
-    void depiler(noeud * n);
+    noeud* depiler_noeud();
     //sommet noeud
     noeud * sommetNoeud();
 };
@@ -54,9 +59,9 @@ public:
     arbre(std::string expression);
     arbre(noeud * racine);
     ~arbre();
-    void afficherRec(noeud * n);
+    void afficher(noeud * n);
     void afficher();
-    float evaluer();
+    float evaluer(noeud * n);
     void afficherPrefixe();
     //deriver
     arbre deriver(char var);

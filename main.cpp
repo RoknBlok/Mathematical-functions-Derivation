@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "class.h"
 
 using namespace std;
@@ -83,27 +84,25 @@ void exercice2() {
 void exercice4()
 {
     //test dérivation de l'expression 2*x+3
+    /*
     noeud * n1 = new noeud('f', ' ', 2, ' ');
     noeud * n2 = new noeud('v', ' ', 0, 'x');
     noeud * n3 = new noeud('o', '*', 0, ' ', n1, n2);
     noeud * n4 = new noeud('f', ' ', 3, ' ');
     noeud * n5 = new noeud('o', '+', 0, ' ', n3, n4);
     arbre a(n5);
-    
+    */
 
     //test dérivation de l'expression 2x+3
-    //arbre a("3+2*x");
-
-
-    
-
+    arbre a("(3*X)/ 2");
 
     cout<<"Expression : ";
     a.afficher();
     cout<<endl;
-    a.evaluer();
-    cout<<"Expression évaluée : ";
-    a.afficher();
+    cout<<"Dérivée : ";
+    //deriver par rapport à x
+    a.deriver('x').afficher();
+    cout<<endl;
 
     /*
     cout<<"Expression dérivée par rapport à x : ";
