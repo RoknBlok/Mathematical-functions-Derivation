@@ -8,7 +8,7 @@ class noeud
     char var;
     noeud * fg, * fd;
     noeud();
-    noeud(char v);
+    noeud(char v, noeud * fg=NULL, noeud * fd=NULL);
     noeud(char type, char ope, float val, char var);
     noeud(char type, char ope, float val, char var, noeud * fg, noeud * fd);
     ~noeud();
@@ -60,8 +60,8 @@ public:
 class arbre
 {
     friend class noeud;
-    noeud * racine ;
 public:
+    noeud * racine ;
     arbre();
     arbre(std::string expression);
     arbre(noeud * racine);

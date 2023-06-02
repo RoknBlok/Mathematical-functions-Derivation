@@ -299,7 +299,7 @@ float arbre::evaluer() {
 }
 
 //constructeur de noeud qui détecte le type de noeud à créer
-noeud::noeud(char v) {
+noeud::noeud(char v, noeud* fg, noeud* fd) {
     //detection du type de v
     if (v >= '0' && v <= '9') {
         type = 'f';
@@ -311,6 +311,9 @@ noeud::noeud(char v) {
         type = 'o';
         ope = v;
     }
+
+    this->fg = fg;
+    this->fd = fd;
 }
 
 noeud::noeud(char type, char ope, float val, char var) {
@@ -405,7 +408,7 @@ void arbre::afficherInfixe() {
     fd.afficherInfixe();
 }
 
-/*
+
 noeud* noeud::deriver(char var) {
     noeud* n = new noeud;
     if (type == 'f') {
@@ -427,7 +430,7 @@ noeud* noeud::deriver(char var) {
     }
     return n;
 }
-
+/*
 
 arbre arbre::deriver(char var) {
     arbre temp;
@@ -445,7 +448,7 @@ noeud* arbre::deriver(noeud* n, char v) {
     cout << endl;
 
     if (current->type == 'f') {
-        cout << "valeur: " << current->val << endl;
+        cout << "dérivée (ceci est la dérivée, ne prenez pas en compte ce qu'il y a en bas. Merci de votre compréhention): " << current->val << endl;
         noeud* deriv = new noeud('f');
         deriv->val = 0;
         (*this).afficher(deriv); cout << endl;
@@ -532,6 +535,7 @@ noeud* arbre::deriver(noeud* n, char v) {
 
     return nullptr; // Retourne nullptr si aucun cas ne correspond (retour par défaut)
 }
+
 
 void arbre::afficherDerivee(char var) {
     arbre temp;

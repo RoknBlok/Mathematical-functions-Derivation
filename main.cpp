@@ -65,6 +65,7 @@ int evaluer(string expression) {
     return pile.sommet();
 }
 
+
 void exercice1() {
     string expression;
     cout << "Entrez une expression suffixée : ";
@@ -96,6 +97,8 @@ void exercice3()
     
     cout<<"Expression : ";
     a.afficher();
+
+
     
     cout<<endl;
 
@@ -119,11 +122,11 @@ void exercice3()
 void exercice4()
 {
     //test dérivation de l'expression 2*x+3
-    noeud * n1 = new noeud('f', ' ', 2, ' ');
-    noeud * n2 = new noeud('f', ' ', 1, ' ');
-    noeud * n3 = new noeud('o', '*', 0, ' ', n1, n2);
-    noeud * n4 = new noeud('f', ' ', 3, ' ');
-    noeud * n5 = new noeud('o', '+', 0, ' ', n3, n4);
+    noeud * n1 = new noeud('2');
+    noeud * n2 = new noeud('x');
+    noeud * n3 = new noeud('*', n1, n2);
+    noeud * n4 = new noeud('3');
+    noeud * n5 = new noeud('+', n3, n4);
     arbre a(n5);
 
     //test dérivation de l'expression 2x+3
@@ -134,8 +137,14 @@ void exercice4()
     
     cout<<endl;
 
-    cout<<"Execution de la fonction evaluer() :";
-    cout<<a.evaluer();
+    cout<<"Construction de l'arbre de dérivation : \n \n";
+    arbre deriveDea(a.deriver(a.racine, 'x'));
+
+    cout<<"Dérivée de l'expression :";
+    //affiche la dérivée de l'expression
+    deriveDea.afficher();
+
+    //a.deriver(a.racine,'x')
     /*
     cout<<endl;
     cout<<"Dérivée : ";
@@ -151,16 +160,29 @@ void exercice4()
 }
 
 int main() {
+    /*cout<<R"(
+  __  __ _       _   _____           _      _     _____   ____   ____  _____
+ |  \/  (_)     (_) |  __ \         (_)    | |   |  __ \ / __ \ / __ \|  __ \
+ | \  / |_ _ __  _  | |__) | __ ___  _  ___| |_  | |__) | |  | | |  | | |__) |
+ | |\/| | | '_ \| | |  ___/ '__/ _ \| |/ _ \ __| |  ___/| |  | | |  | |  ___/
+ | |  | | | | | | | | |   | | | (_) | |  __/ |_  | |    | |__| | |__| | |
+ |_|  |_|_|_| |_|_| |_|   |_|  \___/| |\___|\__| |_|     \____/ \____/|_|
+                                   _/ |
+                                  |__/
+    )"<<endl;
+     */
     cout<<R"(
-  __  __ _       _   _____           _      _     _____   ____   ____  
- |  \/  (_)     (_) |  __ \         (_)    | |   |  __ \ / __ \ / __ \ 
+  __  __ _       _   _____           _      _     _____   ____   ____
+ |  \/  (_)     (_) |  __ \         (_)    | |   |  __ \ / __ \ / __ \
  | \  / |_ _ __  _  | |__) | __ ___  _  ___| |_  | |__) | |  | | |  | |
  | |\/| | | '_ \| | |  ___/ '__/ _ \| |/ _ \ __| |  ___/| |  | | |  | |
  | |  | | | | | | | | |   | | | (_) | |  __/ |_  | |    | |__| | |__| |
- |_|  |_|_|_| |_|_| |_|   |_|  \___/| |\___|\__| |_|     \____/ \____/ 
-                                   _/ |                                
-                                  |__/                                 
+ |_|  |_|_|_| |_|_| |_|   |_|  \___/| |\___|\__| |_|     \____/ \____/
+                                   _/ |
+                                  |__/
     )"<<endl;
+
+
     cout<<"séléctionnez un programme :"<<endl;
     cout<<"[1] : évaluer une expression suffixée"<<endl;
     cout<<"[2] : évaluer une expression infixée"<<endl;
@@ -180,7 +202,7 @@ int main() {
         exercice3();
         break;
     case 4:
-        cout<<"démonstration dérivation d'arbre binaire"<<endl;
+        exercice4();
         break;
     default:
         cout<<"aucun programme séléctionné, fin."<<endl;
