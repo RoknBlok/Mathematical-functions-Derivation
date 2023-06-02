@@ -9,9 +9,22 @@ Pile::Pile() {
     tete = NULL;
 }
 
+Pile::~Pile() {
+    delete tete;
+}
+
+/*
 void Pile::empiler(char n) {
     Maillon* temp = new Maillon(n, tete);
     tete = temp;
+}
+*/
+
+void Pile::empiler(char value) {
+    Maillon *new_maillon = new Maillon;
+    new_maillon->data = value;
+    new_maillon->next = tete;
+    tete = new_maillon;
 }
 
 void Pile::depiler() {
@@ -51,6 +64,38 @@ int Pile::priorite(char op) {
     }
     return 0;
 }
+
+
+/*
+void Pile::infixeVersSuffixe(string expression) {
+    string sortie;
+    for (int i = 0; i < expression.length(); i++) {
+        if (expression[i] == '(') {
+            empiler(expression[i]);
+        } else if (expression[i] == ')') {
+            while (sommet() != '(') {
+                sortie += sommet();
+                depiler();
+            }
+            depiler();
+        } else if (isdigit(expression[i])) {
+            sortie += expression[i];
+        } else {
+            while (!vide() && priorite(sommet()) >= priorite(expression[i])) {
+                sortie += sommet();
+                depiler();
+            }
+            empiler(expression[i]);
+        }
+    }
+    while (!vide()) {
+        sortie += sommet();
+        depiler();
+    }
+    cout << sortie << endl;
+}
+
+*/
 
 void Pile::infixeVersSuffixe(string expression) {
     string sortie;
@@ -97,6 +142,7 @@ noeud * Pile::depiler_noeud() {
     delete temp;
     return n;
 }
+
 
 noeud* Pile::sommetNoeud() {
     if (tete == NULL) {
@@ -189,6 +235,34 @@ arbre::arbre(string a){
     (*this).racine = pile2.depiler_noeud();
 }
 
+
+/*
+//constructeur d'arbre avec une expression en notation suffixe
+arbre::arbre(string a) {
+    Pile pile;
+    for (int i = 0; i < a.length(); i++) {
+        if (isdigit(a[i])) {
+            noeud* n = new noeud;
+            n->type = 'f';
+            n->val = a[i] - '0';
+            pile.empiler(n);
+        } else {
+            noeud* n = new noeud;
+            n->type = 'o';
+            n->ope = a[i];
+            n->fd = pile.depiler_noeud();
+            n->fg = pile.depiler_noeud();
+            pile.empiler(n);
+        }
+    }
+    racine = pile.depiler_noeud();
+}
+
+*/
+
+
+
+
 arbre::~arbre() {
     delete racine;
 }
@@ -220,6 +294,25 @@ float arbre::evaluer(noeud *n) {
     }
 }
 
+float arbre::evaluer() {
+    return evaluer(racine);
+}
+
+//constructeur de noeud qui détecte le type de noeud à créer
+noeud::noeud(char v) {
+    //detection du type de v
+    if (v >= '0' && v <= '9') {
+        type = 'f';
+        val = v - '0';
+    } else if (v == 'x' || v == 'y' || v == 'z') {
+        type = 'v';
+        var = v;
+    } else {
+        type = 'o';
+        ope = v;
+    }
+}
+
 noeud::noeud(char type, char ope, float val, char var) {
     this->type = type;
     this->ope = ope;
@@ -241,6 +334,14 @@ noeud::noeud(char type, char ope, float val, char var, noeud* fg, noeud* fd) {
 noeud::~noeud() {
     delete fg;
     delete fd;
+}
+
+void noeud::setfgauche(noeud* fg) {
+    this->fg = fg;
+}
+
+void noeud::setfdroit(noeud* fd) {
+    this->fd = fd;
 }
 
 void noeud::afficher() {
@@ -267,7 +368,7 @@ void arbre::afficher(noeud *n) { // /!\ NE PAS OUBLIER DE METTRE DES ESPACES ENT
     } else if(n->type == 'f'){
         cout << n->val << " ";
     }else if(n->type == 'v'){
-        cout << n->ope << " ";
+        cout << n->var << " ";
     }
 }
 
@@ -290,29 +391,152 @@ void arbre::afficherPrefixe() {
     fd.afficherPrefixe();
 }
 
+void arbre::afficherInfixe() {
+    if (racine == NULL) {
+        cout << "L'arbre est vide" << endl;
+        return;
+    }
+    arbre fg;
+    fg.racine = racine->fg;
+    fg.afficherInfixe();
+    racine->afficher();
+    arbre fd;
+    fd.racine = racine->fd;
+    fd.afficherInfixe();
+}
 
-
-noeud * noeud::deriver(char var) {
+/*
+noeud* noeud::deriver(char var) {
+    noeud* n = new noeud;
     if (type == 'f') {
-        return new noeud('f', ' ', 0, ' ');
+        n->type = 'f';
+        n->val = 0;
     } else if (type == 'v') {
         if (var == this->var) {
-            return new noeud('f', ' ', 1, ' ');
+            n->type = 'f';
+            n->val = 1;
         } else {
-            return new noeud('f', ' ', 0, ' ');
+            n->type = 'f';
+            n->val = 0;
         }
     } else {
-        noeud* temp = new noeud('o', ope, 0, ' ');
-        temp->fg = fg->deriver(var);
-        temp->fd = fd->deriver(var);
-        return temp;
+        n->type = 'o';
+        n->ope = ope;
+        n->fg = fg->deriver(var);
+        n->fd = fd->deriver(var);
     }
+    return n;
 }
+
 
 arbre arbre::deriver(char var) {
     arbre temp;
     temp.racine = racine->deriver(var);
     return temp;
+}
+*/
+
+
+//deriver tutur
+noeud* arbre::deriver(noeud* n, char v) {
+    noeud* current = n;
+    cout << "on derive: ";
+    (*this).afficher(current);
+    cout << endl;
+
+    if (current->type == 'f') {
+        cout << "valeur: " << current->val << endl;
+        noeud* deriv = new noeud('f');
+        deriv->val = 0;
+        (*this).afficher(deriv); cout << endl;
+        return deriv;
+    }
+    else if (current->type == 'v') {
+        if (current->ope == v) {
+            noeud* deriv = new noeud('f');
+            deriv->val = 1;
+            (*this).afficher(deriv); cout << endl;
+            return deriv;
+        }
+        else {
+            noeud* deriv = new noeud('f');
+            deriv->val = 0;
+            (*this).afficher(deriv); cout << endl;
+            return deriv;
+        }
+    }
+    else {
+        if (current->ope == '+' || current->ope == '-') {
+            noeud* deriv = new noeud(current->ope);
+            deriv->fg = deriver(current->fg, v);
+            deriv->fd = deriver(current->fd, v);
+            (*this).afficher(deriv); cout << endl;
+            return deriv;
+        }else if (current->ope == '*') {
+            noeud* deriv = new noeud('+');
+            deriv->fg = new noeud('*');
+            deriv->fg->fg = deriver(current->fg, v);
+            deriv->fg->fd = current->fd;
+
+            deriv->fd = new noeud('*');
+            deriv->fd->fg = current->fg;
+            deriv->fd->fd = deriver(current->fd, v);
+
+            (*this).afficher(deriv); cout << endl;
+            return deriv;
+        }else if (current->ope == '/') {
+            noeud* deriv = new noeud('/');
+            deriv->fg = new noeud('-');
+            deriv->fg->fg = new noeud('*');
+            deriv->fg->fg->fg = deriver(current->fg, v);
+            deriv->fg->fg->fd = current->fd;
+
+            deriv->fg->fd = new noeud('*');
+            deriv->fg->fd->fg = current->fg;
+            deriv->fg->fd->fd = deriver(current->fd, v);
+
+            deriv->fd = new noeud('*');
+            deriv->fd->fg = current->fd;
+            deriv->fd->fd = current->fd;
+
+            (*this).afficher(deriv); cout << endl;
+            return deriv;
+        }
+        else if (current->ope == '^') {
+            int exponent = current->fd->val;
+            noeud* derivateBase = deriver(current->fg, v);
+            noeud* derivatefg = deriver(current->fg, v);
+
+            if (exponent == 0) {
+                noeud* deriv = new noeud('f');
+                deriv->val = 0;
+                return deriv;
+            }
+            else {
+                noeud* deriv = new noeud('*');
+                deriv->fg = new noeud('*');
+                deriv->fg->fg = new noeud('f');
+                deriv->fg->fg->val = exponent;
+                deriv->fg->fd = new noeud('^');
+                deriv->fg->fd->fg = current->fg;
+                deriv->fg->fd->fd = new noeud('f');
+                deriv->fg->fd->fd->val = exponent - 1;
+                deriv->fd = new noeud('*');
+                deriv->fd->fg = derivateBase;
+                deriv->fd->fd = derivatefg;
+                (*this).afficher(deriv); cout << endl;
+                return deriv;
+            }
+        }
+    }
+
+    return nullptr; // Retourne nullptr si aucun cas ne correspond (retour par défaut)
+}
+
+void arbre::afficherDerivee(char var) {
+    arbre temp;
+    temp.racine = racine->deriver(var);
+    temp.afficher();
 }
 
 

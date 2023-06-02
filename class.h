@@ -8,9 +8,14 @@ class noeud
     char var;
     noeud * fg, * fd;
     noeud();
+    noeud(char v);
     noeud(char type, char ope, float val, char var);
     noeud(char type, char ope, float val, char var, noeud * fg, noeud * fd);
     ~noeud();
+
+    void setfgauche(noeud * fg);
+    void setfdroit(noeud * fd);
+
     void afficher();
     noeud * deriver(char var);
 };
@@ -33,6 +38,7 @@ class Pile {
     Maillon* tete;
 public:
     Pile();
+    ~Pile();
     void empiler(char n);
     void depiler();
     bool vide();
@@ -48,6 +54,7 @@ public:
     noeud* depiler_noeud();
     //sommet noeud
     noeud * sommetNoeud();
+
 };
 
 class arbre
@@ -62,7 +69,14 @@ public:
     void afficher(noeud * n);
     void afficher();
     float evaluer(noeud * n);
+    float evaluer();
     void afficherPrefixe();
+    void afficherInfixe();
+
+    
     //deriver
-    arbre deriver(char var);
+    noeud* deriver(noeud * n, char var);
+
+    //afficher derivée
+    void afficherDerivee(char var);
 };

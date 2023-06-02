@@ -81,29 +81,68 @@ void exercice2() {
 }
 
 //arbre binaire qui dérive
-void exercice4()
+void exercice3()
 {
     //test dérivation de l'expression 2*x+3
-    /*
     noeud * n1 = new noeud('f', ' ', 2, ' ');
-    noeud * n2 = new noeud('v', ' ', 0, 'x');
+    noeud * n2 = new noeud('f', ' ', 1, ' ');
     noeud * n3 = new noeud('o', '*', 0, ' ', n1, n2);
     noeud * n4 = new noeud('f', ' ', 3, ' ');
     noeud * n5 = new noeud('o', '+', 0, ' ', n3, n4);
     arbre a(n5);
-    */
 
     //test dérivation de l'expression 2x+3
-    arbre a("(3*X)/ 2");
-
+    //arbre a("23+");
+    
     cout<<"Expression : ";
     a.afficher();
+    
+    cout<<endl;
+
+    cout<<"Execution de la fonction evaluer() :";
+    cout<<a.evaluer();
+    /*
     cout<<endl;
     cout<<"Dérivée : ";
     //deriver par rapport à x
     a.deriver('x').afficher();
     cout<<endl;
+*/
+    /*
+    cout<<"Expression dérivée par rapport à x : ";
+    a.deriver('x').afficher();
+    cout<<endl;*/
+    
+}
 
+//fonction de démonstration dérivation d'arbre binaire
+void exercice4()
+{
+    //test dérivation de l'expression 2*x+3
+    noeud * n1 = new noeud('f', ' ', 2, ' ');
+    noeud * n2 = new noeud('f', ' ', 1, ' ');
+    noeud * n3 = new noeud('o', '*', 0, ' ', n1, n2);
+    noeud * n4 = new noeud('f', ' ', 3, ' ');
+    noeud * n5 = new noeud('o', '+', 0, ' ', n3, n4);
+    arbre a(n5);
+
+    //test dérivation de l'expression 2x+3
+    //arbre a("23+");
+    
+    cout<<"Expression : ";
+    a.afficher();
+    
+    cout<<endl;
+
+    cout<<"Execution de la fonction evaluer() :";
+    cout<<a.evaluer();
+    /*
+    cout<<endl;
+    cout<<"Dérivée : ";
+    //deriver par rapport à x
+    a.deriver('x').afficher();
+    cout<<endl;
+*/
     /*
     cout<<"Expression dérivée par rapport à x : ";
     a.deriver('x').afficher();
@@ -112,25 +151,36 @@ void exercice4()
 }
 
 int main() {
+    cout<<R"(
+  __  __ _       _   _____           _      _     _____   ____   ____  
+ |  \/  (_)     (_) |  __ \         (_)    | |   |  __ \ / __ \ / __ \ 
+ | \  / |_ _ __  _  | |__) | __ ___  _  ___| |_  | |__) | |  | | |  | |
+ | |\/| | | '_ \| | |  ___/ '__/ _ \| |/ _ \ __| |  ___/| |  | | |  | |
+ | |  | | | | | | | | |   | | | (_) | |  __/ |_  | |    | |__| | |__| |
+ |_|  |_|_|_| |_|_| |_|   |_|  \___/| |\___|\__| |_|     \____/ \____/ 
+                                   _/ |                                
+                                  |__/                                 
+    )"<<endl;
     cout<<"séléctionnez un programme :"<<endl;
-    cout<<"[1] : prog 1"<<endl;
-    cout<<"[2] : prog 2"<<endl;
-    cout<<"[3] : prog 3"<<endl;
+    cout<<"[1] : évaluer une expression suffixée"<<endl;
+    cout<<"[2] : évaluer une expression infixée"<<endl;
+    cout<<"[3] : démonstration évaluation d'arbre binaire"<<endl;
+    cout<<"[4] : démonstration dérivation d'arbre binaire"<<endl;
     int prog;
     cin>>prog;
     switch (prog)
     {
     case 1:
-        cout<<"prog 1 "<<endl;
         exercice1();
         break;
     case 2:
-        cout<<"prog 2"<<endl;
         exercice2();
         break;
     case 3:
-        cout<<"prog 3"<<endl;
-        exercice4();
+        exercice3();
+        break;
+    case 4:
+        cout<<"démonstration dérivation d'arbre binaire"<<endl;
         break;
     default:
         cout<<"aucun programme séléctionné, fin."<<endl;
