@@ -448,7 +448,7 @@ noeud* arbre::deriver(noeud* n, char v) {
     cout << endl;
 
     if (current->type == 'f') {
-        cout << "dérivée (ceci est la dérivée, ne prenez pas en compte ce qu'il y a en bas. Merci de votre compréhention): " << current->val << endl;
+        cout << "dérivée (ne prenez en compte que la première dérivée): " << current->val << endl;
         noeud* deriv = new noeud('f');
         deriv->val = 0;
         (*this).afficher(deriv); cout << endl;
