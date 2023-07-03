@@ -1,4 +1,4 @@
-# Project Title
+# Miniprojet POO
 
 Binary Tree, Stack, and Linked List-based Programming Project
 
